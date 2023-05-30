@@ -58,11 +58,13 @@ type handler struct {
 	f  *file
 }
 */
-
 type handler struct {
 	kc *kafka.Conn
 }
 
+/*
+The init() function is cool because it will execute before main() allowing for a cleaner and more controlled start up for things like setting structs to values to be used by the rest of the program...etc
+*/
 func init() {
 	kaf = KAFKA{
 		URL:       os.Getenv("KAFKA_URL"),
@@ -154,9 +156,6 @@ func main() {
 	opts.ConnectRetry = true
 	opts.AutoReconnect = true
 
-	// If using QOS2 and CleanSession = FALSE then it is possible that we will receive messages on topics that we
-	// have not subscribed to here (if they were previously subscribed to they are part of the session and survive
-	// disconnect/reconnect). Adding a DefaultPublishHandler lets us detect this.
 	opts.DefaultPublishHandler = func(_ mqtt.Client, msg mqtt.Message) {
 		fmt.Printf("UNEXPECTED MESSAGE: %s\n", msg)
 	}
