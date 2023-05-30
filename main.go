@@ -19,7 +19,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -97,18 +96,9 @@ func (k *handler) Close() {
 	}
 }
 
-// Message
-type Message struct {
-	Count uint64
-}
-
 // handle is called when a message is received
 func (k *handler) handle(_ mqtt.Client, msg mqtt.Message) {
-	// We extract the count and write that out first to simplify checking for missing values
-	var m Message
-	if err := json.Unmarshal(msg.Payload(), &m); err != nil {
-		fmt.Printf("Message could not be parsed (%s): %s", msg.Payload(), err)
-	}
+
 	k.kc.SetWriteDeadline(time.Now().Add(10 * time.Second))
 	_, err := k.kc.WriteMessages(
 		kafka.Message{
